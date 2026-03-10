@@ -2,11 +2,18 @@
 """
 PresentationBanana — Gemini Image Generator
 ============================================
-Generates a slide image via Google Imagen 3 API.
-Aspect ratio and output size adapt automatically to the slide type.
+Generates images via Google Imagen / Gemini API.
+Supports both slide-type presets and custom dimensions.
 
 Usage:
+    # Slide preset (for presentations):
     python generate_image.py --slide 1 --prompt "..." --version 1 --slide-type content
+
+    # Custom size (for standalone images):
+    python generate_image.py --slide 1 --prompt "..." --version 1 --width 3440 --height 1440
+
+    # Custom size with name:
+    python generate_image.py --slide 1 --prompt "..." --version 1 --width 1920 --height 1080 --name wallpaper
 
 Slide types → aspect ratio → output size:
     content  →  9:16  →  640 × 900 px
@@ -16,9 +23,12 @@ Slide types → aspect ratio → output size:
     visual   →  16:9  →  1280 × 720 px  (central illustration, replaces bullet text)
     icon     →  1:1   →  256 × 256 px
 
+Custom sizes: any WxH — closest Gemini aspect ratio is auto-selected.
+Supported Gemini ratios: 1:1, 3:4, 4:3, 9:16, 16:9
+
 Output:
     JSON to stdout: {"ok": true, "path": "...", "slide": 1, "size": [640, 900]}
-    Image saved to: output/images/v{version}/slide_{N}.png
+    Image saved to: output/images/v{version}/{name}_s{N}_{type}.png
 
 Requirements:
     pip install google-genai pillow
@@ -76,6 +86,22 @@ SLIDE_TYPE_CONFIG = {
     "default": {"aspect": "9:16", "resize": (640, 900)},
 }
 
+# Gemini-supported aspect ratios with their numeric values
+GEMINI_RATIOS = {
+    "1:1":  1.0,
+    "3:4":  3 / 4,
+    "4:3":  4 / 3,
+    "9:16": 9 / 16,
+    "16:9": 16 / 9,
+}
+
+
+def _closest_aspect_ratio(w: int, h: int) -> str:
+    """Pick the Gemini aspect ratio closest to the given dimensions."""
+    target = w / h
+    return min(GEMINI_RATIOS, key=lambda r: abs(GEMINI_RATIOS[r] - target))
+
+
 ASPECT_SUFFIX = {
     "9:16": (
         "Vertical portrait format, professional quality, "
@@ -99,7 +125,8 @@ def resize_image(img, target: tuple):
 
 
 def generate(slide_num: int, prompt: str, version: int, slide_type: str,
-             icon_index=None) -> dict:
+             icon_index=None, width=None, height=None, aspect_ratio=None,
+             name=None) -> dict:
 
     api_key = os.environ.get("GOOGLE_API_KEY")
     if not api_key:
@@ -111,19 +138,25 @@ def generate(slide_num: int, prompt: str, version: int, slide_type: str,
     except ImportError:
         return {"ok": False, "error": "Run: pip install google-genai pillow"}
 
-    cfg = SLIDE_TYPE_CONFIG.get(slide_type, SLIDE_TYPE_CONFIG["default"])
-    aspect = cfg["aspect"]
-    target = cfg["resize"]
+    # Custom size mode: --width + --height override slide-type presets
+    if width and height:
+        target = (width, height)
+        aspect = aspect_ratio if aspect_ratio else _closest_aspect_ratio(width, height)
+    else:
+        cfg = SLIDE_TYPE_CONFIG.get(slide_type, SLIDE_TYPE_CONFIG["default"])
+        aspect = aspect_ratio if aspect_ratio else cfg["aspect"]
+        target = cfg["resize"]
 
     out_dir = Path(__file__).parent.parent / "output" / "images" / f"v{version}"
     out_dir.mkdir(parents=True, exist_ok=True)
-    slug = _get_project_slug()
+    slug = name if name else _get_project_slug()
     if icon_index is not None:
         out_path = out_dir / f"{slug}_s{slide_num:02d}_icon_{icon_index}.png"
     else:
-        out_path = out_dir / f"{slug}_s{slide_num:02d}_{slide_type}.png"
+        label = f"{target[0]}x{target[1]}" if width and height else slide_type
+        out_path = out_dir / f"{slug}_s{slide_num:02d}_{label}.png"
 
-    enhanced_prompt = f"{prompt}. {ASPECT_SUFFIX[aspect]}"
+    enhanced_prompt = f"{prompt}. {ASPECT_SUFFIX.get(aspect, ASPECT_SUFFIX['16:9'])}"
 
     client = genai.Client(api_key=api_key)
 
@@ -205,18 +238,34 @@ def generate(slide_num: int, prompt: str, version: int, slide_type: str,
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Generate a slide image (aspect ratio adapts to slide type)"
+        description="Generate an image (slide preset or custom size)"
     )
-    parser.add_argument("--slide",      type=int,  required=True)
+    parser.add_argument("--slide",      type=int,  required=True,
+                        help="Image number (1, 2, 3...)")
     parser.add_argument("--prompt",     type=str,  required=True)
     parser.add_argument("--version",    type=int,  default=1)
     parser.add_argument("--slide-type", type=str,  default="content",
-                        choices=list(SLIDE_TYPE_CONFIG.keys()))
+                        choices=list(SLIDE_TYPE_CONFIG.keys()),
+                        help="Slide preset (ignored when --width/--height set)")
     parser.add_argument("--icon-index", type=int,  default=None)
+    parser.add_argument("--width",      type=int,  default=None,
+                        help="Custom width in px (e.g. 3440)")
+    parser.add_argument("--height",     type=int,  default=None,
+                        help="Custom height in px (e.g. 1440)")
+    parser.add_argument("--aspect-ratio", type=str, default=None,
+                        choices=list(GEMINI_RATIOS.keys()),
+                        help="Override Gemini aspect ratio")
+    parser.add_argument("--name",       type=str,  default=None,
+                        help="Filename prefix (e.g. 'wallpaper', 'banner')")
     args = parser.parse_args()
 
+    if (args.width is None) != (args.height is None):
+        parser.error("--width and --height must be used together")
+
     result = generate(args.slide, args.prompt, args.version, args.slide_type,
-                      icon_index=args.icon_index)
+                      icon_index=args.icon_index, width=args.width,
+                      height=args.height, aspect_ratio=args.aspect_ratio,
+                      name=args.name)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     sys.exit(0 if result.get("ok") else 1)
 

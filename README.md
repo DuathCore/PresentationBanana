@@ -72,7 +72,7 @@ To generate standalone images (no PowerPoint), use:
 /image-banana
 ```
 
-Same Critic-Visualizer feedback loop, but focused purely on image quality. Supports single images, batches, and consistent series. Formats: 16:9, 9:16, 1:1.
+Same Critic-Visualizer feedback loop, but focused purely on image quality. Supports single images, batches, and consistent series. Formats: 16:9, 9:16, 1:1, or any custom size (e.g. 3440x1440 ultrawide).
 
 ### Input Options
 
@@ -108,10 +108,18 @@ Without tmux, Claude runs the workflow solo (still works, just sequential).
 ### Generate a single image
 
 ```bash
+# Slide preset (for presentations)
 python scripts/generate_image.py \
   --slide 3 \
   --prompt "modern boardroom meeting, warm lighting, professional" \
   --version 1
+
+# Custom size (e.g. ultrawide wallpaper)
+python scripts/generate_image.py \
+  --slide 1 \
+  --prompt "panoramic mountain landscape at sunset" \
+  --width 3440 --height 1440 \
+  --name mountain-wallpaper
 ```
 
 ### Build presentation from slide_structure.md

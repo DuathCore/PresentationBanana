@@ -44,6 +44,17 @@ Falls der Nutzer keinen Stil angibt, FRAGE nach einem der folgenden:
 | `section`  | Zentrierter Text, kein Bild             |
 | `closing`  | Bild links, Titel + CTA rechts          |
 
+### Custom-Größen (Standalone-Bilder)
+
+`generate_image.py` unterstützt beliebige Größen über `--width` und `--height`:
+
+```bash
+python scripts/generate_image.py --slide 1 --prompt "..." --width 3440 --height 1440 --name my-project
+```
+
+Das nächste Gemini-Aspect-Ratio (1:1, 3:4, 4:3, 9:16, 16:9) wird automatisch gewählt.
+`--name` setzt den Dateinamen-Prefix (statt Ableitung aus slide_structure.md).
+
 ---
 
 ## Technische Voraussetzungen
