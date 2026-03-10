@@ -64,6 +64,16 @@ Then type:
 
 Claude asks for your topic, style, and slide count — then runs the full workflow.
 
+### Image Generation Only
+
+To generate standalone images (no PowerPoint), use:
+
+```
+/image-banana
+```
+
+Same Critic-Visualizer feedback loop, but focused purely on image quality. Supports single images, batches, and consistent series. Formats: 16:9, 9:16, 1:1.
+
 ### Input Options
 
 Place your input in the `input/` folder:

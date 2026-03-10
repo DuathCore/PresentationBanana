@@ -77,7 +77,9 @@ claude --dangerously-skip-permissions
 
 ---
 
-## Workflow-Übersicht
+## Workflows
+
+### `/presentation-banana` — Präsentationen erstellen
 
 ```
 1. content_strategist   → workspace/slide_structure.md
@@ -86,6 +88,23 @@ claude --dangerously-skip-permissions
 4. visual_designer (v2) → output/images/v2/ + presentation_v2.pptx
 5. critic (final)       → workspace/final_report.md
 ```
+
+### `/image-banana` — Nur Bilder generieren
+
+Gleicher Critic-Visualizer-Loop, aber ohne PowerPoint:
+
+```
+1. concept_strategist    → workspace/image_concepts.md
+2. image_generator (v1)  → output/images/v1/
+3. image_critic          → workspace/image_critique_v1.md
+4. image_generator (v2)  → output/images/v2/ (verfeinert)
+5. image_critic          → workspace/image_critique_v2.md
+6. image_generator (v3)  → output/images/v3/ (Feinschliff)
+7. final report          → workspace/image_final_report.md
+```
+
+Formate: 16:9 (Querformat), 9:16 (Hochformat), 1:1 (Quadrat)
+Serien-Modus: konsistente Bildsprache über alle Bilder
 
 ---
 
