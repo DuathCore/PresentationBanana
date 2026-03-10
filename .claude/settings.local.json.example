@@ -1,0 +1,15 @@
+{
+  "env": {
+    "GOOGLE_API_KEY": "YOUR-GOOGLE-API-KEY-HERE",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "model": "claude-sonnet-4-6",
+  "permissions": {
+    "allow": [
+      "Bash(python scripts/generate_image.py*)",
+      "Bash(python scripts/build_pptx.py*)",
+      "Bash(pip install*)",
+      "Bash(cp output/images/v1/*.png output/images/v2/*)"
+    ]
+  }
+}

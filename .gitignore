@@ -1,0 +1,39 @@
+# API Keys & Secrets
+.env
+.claude/settings.local.json
+
+# Generated output (reproduce with the tool)
+output/images/**
+!output/images/
+!output/images/v1/
+!output/images/v2/
+!output/images/**/.gitkeep
+output/presentations/**
+!output/presentations/
+!output/presentations/.gitkeep
+
+# Workspace temp files (generated per run)
+workspace/*.md
+workspace/*.txt
+!workspace/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
