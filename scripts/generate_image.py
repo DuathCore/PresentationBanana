@@ -147,14 +147,14 @@ def generate(slide_num: int, prompt: str, version: int, slide_type: str,
         aspect = aspect_ratio if aspect_ratio else cfg["aspect"]
         target = cfg["resize"]
 
-    out_dir = Path(__file__).parent.parent / "output" / "images" / f"v{version}"
+    out_dir = Path(__file__).parent.parent / "output" / "images"
     out_dir.mkdir(parents=True, exist_ok=True)
     slug = name if name else _get_project_slug()
     if icon_index is not None:
-        out_path = out_dir / f"{slug}_s{slide_num:02d}_icon_{icon_index}.png"
+        out_path = out_dir / f"{slug}_s{slide_num:02d}_icon_{icon_index}_v{version}.png"
     else:
         label = f"{target[0]}x{target[1]}" if width and height else slide_type
-        out_path = out_dir / f"{slug}_s{slide_num:02d}_{label}.png"
+        out_path = out_dir / f"{slug}_s{slide_num:02d}_{label}_v{version}.png"
 
     enhanced_prompt = f"{prompt}. {ASPECT_SUFFIX.get(aspect, ASPECT_SUFFIX['16:9'])}"
 

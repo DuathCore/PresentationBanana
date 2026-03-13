@@ -27,6 +27,20 @@ build/
 .venv/
 venv/
 
+# MCP servers (large, clone separately)
+.mcp_excalidraw/
+Office-PowerPoint-MCP-Server/
+
+# MCP config (may contain local paths)
+.mcp.json
+
+# Logs
+*.log
+
+# Project output (large, not for repo)
+output/projekte/
+output/papierkorb/
+
 # OS
 .DS_Store
 Thumbs.db

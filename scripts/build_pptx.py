@@ -371,22 +371,22 @@ def build_section_slide(prs, data: dict, img: Path = None):
         _bg(slide, C_BG)
         slide.shapes.add_picture(str(img), Inches(0.0), Inches(0.0), SLIDE_W, SLIDE_H)
 
-        # Semi-transparent dark overlay (dark rect at ~65% of slide height, bottom-aligned)
-        _rect(slide, Inches(0.0), Inches(3.5), SLIDE_W, Inches(4.0),
-              RGBColor(0x00, 0x00, 0x00))  # solid black stripe for legibility
+        # Narrow dark overlay strip at bottom for text legibility
+        _rect(slide, Inches(0.0), Inches(5.2), SLIDE_W, Inches(2.3),
+              RGBColor(0x00, 0x00, 0x00))  # compact black stripe
 
         # Horizontal accent line above title
-        _rect(slide, Inches(0.0), Inches(4.0), SLIDE_W, Inches(0.04), C_ACCENT)
+        _rect(slide, Inches(0.0), Inches(5.2), SLIDE_W, Inches(0.04), C_ACCENT)
 
         # Title over image
         _textbox(slide, data["title"],
-                 Inches(0.8), Inches(4.15), Inches(11.7), Inches(1.8),
+                 Inches(0.8), Inches(5.35), Inches(11.7), Inches(1.0),
                  size=34, bold=True, color=C_WHITE, align=PP_ALIGN.CENTER)
 
         if data.get("subtitle"):
             _textbox(slide, data["subtitle"],
-                     Inches(0.8), Inches(5.95), Inches(11.7), Inches(1.0),
-                     size=20, color=C_LIGHT, align=PP_ALIGN.CENTER)
+                     Inches(0.8), Inches(6.35), Inches(11.7), Inches(0.9),
+                     size=18, color=C_LIGHT, align=PP_ALIGN.CENTER)
     else:
         # Fallback: solid background, centered
         _bg(slide, C_BG_MID)
@@ -558,7 +558,7 @@ def main():
 
     project_dir  = Path(__file__).parent.parent
     workspace    = project_dir / "workspace"
-    images_dir   = project_dir / "output" / "images" / f"v{args.version}"
+    images_dir   = project_dir / "output" / "images"
     out_dir      = project_dir / "output" / "presentations"
     out_dir.mkdir(parents=True, exist_ok=True)
 

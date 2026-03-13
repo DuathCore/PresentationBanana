@@ -1,0 +1,1 @@
+/home/marek/PresentationBanana/commands/image-banana-flux.md

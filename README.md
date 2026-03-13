@@ -6,6 +6,27 @@ Takes a topic, PDF, or existing PPTX as input and generates a polished presentat
 
 ## How It Works
 
+### `/scientific-presentation` — Academic Presentation Skill
+
+Full 7-phase workflow for university-quality scientific presentations from papers or topics:
+
+```
+Phase 0  Input & Config     →  Read PDF/topic, set style & language
+Phase 1  Content Analysis   →  slide_structure.md (1 idea per slide)
+Phase 2  Build v1           →  Excalidraw diagrams + Imagen images + PPTX
+Phase 3  Bull & Bear v1     →  Per-slide critique (strengths + weaknesses)
+Phase 4  Revision v2        →  Fix all issues from critique
+Phase 5  Bull & Bear v2     →  Stricter second critique round
+Phase 6  Final Polish v3    →  Pixel-perfect alignment, consistency check
+Phase 7  Final Report       →  Score comparison v1 → v2 → v3
+```
+
+**Visualization tools** (auto-selected per slide):
+- **Excalidraw** — Structure diagrams (hierarchies, flows, matrices, comparisons)
+- **Matplotlib** — Data visualization (bar, line, scatter, pie charts)
+- **Imagen** — Atmospheric images (title, section dividers, closing only)
+- **Pillow** — Pixel-perfect rendering with custom rounded corners
+
 ### `/presentation-banana` — Full Presentation Workflow
 
 ```
@@ -40,6 +61,10 @@ Three iterations with critic feedback — typical improvement: +25–40% on the 
 
 ## Features
 
+- **Scientific Presentation Skill** — 7-phase workflow with Bull & Bear critique loops
+- **Excalidraw diagrams** — Programmatic generation via ExcalidrawBuilder (hierarchies, flows, matrices)
+- **Matplotlib charts** — Data visualization with dark-professional theme (bar, line, scatter, pie, grouped bar)
+- **Pillow rendering** — Pixel-perfect diagrams with custom rounded corners where Excalidraw falls short
 - Iterative Critic-Visualizer feedback loop (v1 → Critic → v2 → v3)
 - Preset formats: 16:9, 9:16, 1:1
 - Custom sizes: any resolution (e.g. 3440x1440 ultrawide, 1920x1080 Full HD)
@@ -181,13 +206,19 @@ python scripts/build_pptx.py --version 1 --style light-modern
 
 ```
 PresentationBanana/
+├── .claude/skills/     ← Claude Code skills (scientific-presentation)
 ├── commands/           ← Skill definitions (image-banana, presentation-banana)
 ├── examples/           ← Example output (PDF preview)
 ├── input/              ← Your topic, PDF, or PPTX
 ├── output/
-│   ├── images/v1–v3/   ← Generated images per iteration
+│   ├── images/         ← Generated images (Excalidraw, Imagen, Matplotlib, Pillow)
 │   └── presentations/  ← Final PPTX files
-├── scripts/            ← Python scripts (generate_image.py, build_pptx.py)
+├── scripts/
+│   ├── generate_image.py        ← Imagen image generation
+│   ├── generate_excalidraw.py   ← ExcalidrawBuilder (programmatic diagrams)
+│   ├── generate_chart.py        ← ChartBuilder (Matplotlib data viz)
+│   ├── build_pptx.py            ← Generic PPTX builder
+│   └── build_academic_*.py      ← Per-project academic PPTX builders
 ├── workspace/          ← Temp files between agents (auto-generated)
 └── prompts/            ← Agent team spawn prompts
 ```
@@ -205,6 +236,9 @@ PresentationBanana/
 ## Tech Stack
 
 - **Presentation builder:** [python-pptx](https://python-pptx.readthedocs.io/)
+- **Diagrams:** [Excalidraw](https://excalidraw.com/) (via ExcalidrawBuilder + excalidraw-export CLI)
+- **Charts:** [Matplotlib](https://matplotlib.org/) (via ChartBuilder, dark-professional theme)
+- **Pixel-perfect rendering:** [Pillow](https://pillow.readthedocs.io/) (custom rounded corners, hybrid diagrams)
 - **Image generation:** Google Imagen 4 / Gemini 2.5 Flash (auto-fallback)
 - **Orchestration:** [Claude Code](https://docs.anthropic.com/en/docs/claude-code) with Agent Teams
 - **Inspiration:** PaperBanana (Critic-Visualizer-Loop)
